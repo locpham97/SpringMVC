@@ -23,18 +23,17 @@ public class Author {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object o) {
 
-        if (this == obj) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
+        Author author = (Author) o;
 
+        if (id != author.id) return false;
+        if (books != null ? !books.equals(author.books) : author.books != null)
             return false;
-        }
-        Author author = (Author) obj;
-        return this.id == author.getId();
+        return name != null ? name.equals(author.name) : author.name == null;
     }
 
     public String getName() {
@@ -55,11 +54,14 @@ public class Author {
     @Override
     public int hashCode() {
 
-        return (this.getId() + this.getName()).hashCode();
+        int result = books != null ? books.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (int) (id ^ (id >>> 32));
+        return result;
     }
 
     public void removeBook(Book book) {
-        books.remove(book);
+        this.books.remove(book);
         book.getAuthors().remove(this);
     }
 
@@ -83,7 +85,7 @@ public class Author {
 
         return "Author{" +
                 "id=" + this.id +
-                ", name='" + this.name + '\'' +
+                ", name='" + this.name +
                 ", books=" + this.books +
                 '}';
     }
@@ -95,7 +97,7 @@ public class Author {
                     CascadeType.REFRESH,
                     CascadeType.MERGE
             },
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     @JoinTable(
             name = "books_authors",

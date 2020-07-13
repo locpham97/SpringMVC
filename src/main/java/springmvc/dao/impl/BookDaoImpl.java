@@ -4,6 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import springmvc.dao.BookDao;
 import springmvc.entity.Book;
 
@@ -11,25 +12,23 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Repository
+@Transactional
 public class BookDaoImpl implements BookDao {
-
-    @Autowired
-    private SessionFactory sessionFactory;
 
     public void setSessionFactory(SessionFactory sf) {
 
-        this.sessionFactory = sf;
+        this._sessionFactory = sf;
     }
 
     public void addBook(Book book) {
 
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this._sessionFactory.getCurrentSession();
         session.persist(book);
     }
 
     public Book getBookById(long id) {
 
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this._sessionFactory.getCurrentSession();
         Book b = session.load(Book.class, new Long(id));
         if (b == null) {
 
@@ -40,7 +39,7 @@ public class BookDaoImpl implements BookDao {
 
     public Set<Book> listBooks() {
 
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this._sessionFactory.getCurrentSession();
         Set<Book> booksList = new HashSet<>(
             session.createQuery("from Book ", Book.class).list()
         );
@@ -49,16 +48,19 @@ public class BookDaoImpl implements BookDao {
 
     public void updateBook(Book book) {
 
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this._sessionFactory.getCurrentSession();
         session.update(book);
     }
 
     public void removeBook(long id) {
 
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this._sessionFactory.getCurrentSession();
         Book b = session.load(Book.class, new Long(id));
         if(b != null){
             session.delete(b);
         }
     }
+
+    @Autowired
+    private SessionFactory _sessionFactory;
 }

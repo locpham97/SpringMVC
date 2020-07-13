@@ -17,6 +17,32 @@ public class Book {
         return authors;
     }
 
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Book book = (Book) o;
+
+        if (id != book.id) return false;
+        if (authors != null ? !authors.equals(book.authors) : book.authors != null)
+            return false;
+        if (category != null ? !category.equals(book.category) : book.category != null)
+            return false;
+        return name.equals(book.name);
+    }
+
+    @Override
+    public int hashCode() {
+
+        int result = authors != null ? authors.hashCode() : 0;
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + (int) (id ^ (id >>> 32));
+        result = 31 * result + name.hashCode();
+        return result;
+    }
+
     public Category getCategory() {
 
         return category;
