@@ -1,7 +1,6 @@
 package springmvc.services;
 
 import springmvc.entity.Author;
-import springmvc.entity.Book;
 
 import java.util.Set;
 
@@ -14,5 +13,5 @@ public interface AuthorService {
 
     public void removeAuthor(long id);
 
-    public void updateAuthor(long id);
+    public void updateAuthor(Author author);
 }

@@ -7,12 +7,16 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import springmvc.dao.AuthorDao;
 import springmvc.entity.Author;
+
 import java.util.HashSet;
 import java.util.Set;
 
 @Repository
 @Transactional
 public class AuthorDaoImpl implements AuthorDao {
+
+    @Autowired
+    private SessionFactory _sessionFactory;
 
     @Override
     public void addAuthor(Author author) {
@@ -27,8 +31,10 @@ public class AuthorDaoImpl implements AuthorDao {
         Session session = this._sessionFactory.getCurrentSession();
         Author a = session.load(Author.class, new Long(id));
         if (a == null) {
+
             throw new Error("Not found author with " + id + " id");
         }
+
         return a;
     }
 
@@ -39,18 +45,24 @@ public class AuthorDaoImpl implements AuthorDao {
         Set<Author> authorsList = new HashSet<>(
                 session.createQuery("from Author", Author.class).list()
         );
+
         return authorsList;
     }
 
     @Override
     public void removeAuthor(long id) {
+
         Session session = this._sessionFactory.getCurrentSession();
         Author a = session.load(Author.class, new Long(id));
-        if(a != null){
+        if (a != null) {
+
             session.delete(a);
         }
     }
 
-    @Autowired
-    private SessionFactory _sessionFactory;
+    @Override
+    public void updateAuthor(Author author) {
+        Session session = this._sessionFactory.getCurrentSession();
+        session.update(author);
+    }
 }

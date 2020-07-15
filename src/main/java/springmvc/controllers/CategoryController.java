@@ -14,15 +14,18 @@ import springmvc.services.CategoryService;
 public class CategoryController {
 
     @PostMapping("/add")
-    public String addCategory(@ModelAttribute("category") Category category){
+    public String addCategory(@ModelAttribute("category") Category category) {
+
         this._categoryService.addCategory(category);
         return "redirect:/book/";
     }
 
     @GetMapping("/showAdd")
-    public String showAdd(){
+    public String showAdd() {
+
         return "form-add-category";
     }
+
     @Autowired
     private CategoryService _categoryService;
 }

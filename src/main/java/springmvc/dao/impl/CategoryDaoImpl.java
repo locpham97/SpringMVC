@@ -24,11 +24,13 @@ public class CategoryDaoImpl implements CategoryDao {
 
     @Override
     public Category getCategoryById(long id) {
+
         Session session = this._sessionFactory.getCurrentSession();
-        Category category  = session.load(Category.class, new Long(id));
-        if(category == null){
+        Category category = session.load(Category.class, new Long(id));
+        if (category == null) {
             throw new Error("Cannot find id category");
         }
+
         return category;
     }
 
@@ -39,6 +41,7 @@ public class CategoryDaoImpl implements CategoryDao {
         Set<Category> categoriesList = new HashSet<>(
                 session.createQuery("from Category", Category.class).list()
         );
+
         return categoriesList;
     }
 

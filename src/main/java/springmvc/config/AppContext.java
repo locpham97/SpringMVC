@@ -18,17 +18,34 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class AppContext {
 
-    @Autowired
-    private Environment environment;
+    @Bean
+    public DataSource dataSource() {
+
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(
+                environment.getRequiredProperty("jdbc.driverClassName")
+        );
+        dataSource.setUrl(
+                environment.getRequiredProperty("jdbc.url")
+        );
+        dataSource.setUsername(
+                environment.getRequiredProperty("jdbc.username")
+        );
+        dataSource.setPassword(
+                environment.getRequiredProperty("jdbc.password")
+        );
+
+        return dataSource;
+    }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory() {
+    public HibernateTransactionManager getTransactionManager() {
 
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(this.dataSource());
-        sessionFactory.setPackagesToScan(new String[]{"springmvc.entity"});
-        sessionFactory.setHibernateProperties(hibernateProperties());
-        return sessionFactory;
+        HibernateTransactionManager transactionManager
+                = new HibernateTransactionManager();
+        transactionManager
+                .setSessionFactory(sessionFactory().getObject());
+        return transactionManager;
     }
 
     private Properties hibernateProperties() {
@@ -50,35 +67,24 @@ public class AppContext {
                 "hibernate.hbm2ddl.auto",
                 environment.getRequiredProperty("hibernate.hbm2ddl.auto")
         );
+        properties.put(
+                "hibernate.enable_lazy_load_no_trans",
+                environment.getRequiredProperty("hibernate.enable_lazy_load_no_trans")
+        );
+
         return properties;
     }
 
     @Bean
-    public DataSource dataSource() {
+    public LocalSessionFactoryBean sessionFactory() {
 
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(
-                environment.getRequiredProperty("jdbc.driverClassName")
-        );
-        dataSource.setUrl(
-                environment.getRequiredProperty("jdbc.url")
-        );
-        dataSource.setUsername(
-                environment.getRequiredProperty("jdbc.username")
-        );
-        dataSource.setPassword(
-                environment.getRequiredProperty("jdbc.password")
-        );
-        return dataSource;
+        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+        sessionFactory.setDataSource(this.dataSource());
+        sessionFactory.setPackagesToScan(new String[]{"springmvc.entity"});
+        sessionFactory.setHibernateProperties(hibernateProperties());
+        return sessionFactory;
     }
 
-    @Bean
-    public HibernateTransactionManager getTransactionManager() {
-
-        HibernateTransactionManager transactionManager
-                = new HibernateTransactionManager();
-        transactionManager
-                .setSessionFactory(sessionFactory().getObject());
-        return transactionManager;
-    }
+    @Autowired
+    private Environment environment;
 }

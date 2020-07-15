@@ -34,8 +34,8 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public void updateAuthor(long id) {
-        this.authorDao.removeAuthor(id);
+    public void updateAuthor(Author author) {
+        this.authorDao.updateAuthor(author);
     }
 
     @Autowired

@@ -34,6 +34,7 @@ public class BookDaoImpl implements BookDao {
 
             throw new Error("Not found book with " + id + " id");
         }
+
         return null;
     }
 
@@ -43,6 +44,7 @@ public class BookDaoImpl implements BookDao {
         Set<Book> booksList = new HashSet<>(
             session.createQuery("from Book ", Book.class).list()
         );
+
         return booksList;
     }
 
@@ -57,6 +59,7 @@ public class BookDaoImpl implements BookDao {
         Session session = this._sessionFactory.getCurrentSession();
         Book b = session.load(Book.class, new Long(id));
         if(b != null){
+
             session.delete(b);
         }
     }

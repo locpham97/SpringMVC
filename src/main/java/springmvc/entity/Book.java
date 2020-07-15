@@ -20,27 +20,30 @@ public class Book {
     @Override
     public boolean equals(Object o) {
 
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
 
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+
+            return false;
+        }
         Book book = (Book) o;
 
-        if (id != book.id) return false;
-        if (authors != null ? !authors.equals(book.authors) : book.authors != null)
+        if (id != book.id) {
+
             return false;
-        if (category != null ? !category.equals(book.category) : book.category != null)
+        }
+        if (authors != null ? !authors.equals(book.authors) : book.authors != null) {
+
             return false;
+        }
+        if (category != null ? !category.equals(book.category) : book.category != null) {
+
+            return false;
+        }
+
         return name.equals(book.name);
-    }
-
-    @Override
-    public int hashCode() {
-
-        int result = authors != null ? authors.hashCode() : 0;
-        result = 31 * result + (category != null ? category.hashCode() : 0);
-        result = 31 * result + (int) (id ^ (id >>> 32));
-        result = 31 * result + name.hashCode();
-        return result;
     }
 
     public Category getCategory() {
@@ -48,29 +51,14 @@ public class Book {
         return category;
     }
 
-    public String getName() {
-
-        return name;
-    }
-
-    public long getId() {
-
-        return id;
-    }
-
-    public void setAuthor(Set<Author> author) {
-
-        this.authors = author;
-    }
-
     public void setCategory(Category category) {
 
         this.category = category;
     }
 
-    public void setId(long id) {
+    public String getName() {
 
-        this.id = id;
+        return name;
     }
 
     public void setName(String name) {
@@ -78,17 +66,31 @@ public class Book {
         this.name = name;
     }
 
+    public long getId() {
+
+        return id;
+    }
+
+    public void setId(long id) {
+
+        this.id = id;
+    }
+
+    public void setAuthors(Set<Author> authors) {
+
+        this.authors = authors;
+    }
+
     @Override
     public String toString() {
+
         return "Book{" +
                 "id=" + this.id +
-                ", name='" + this.name + '\'' +
-                ", author=" + this.authors +
-                ", category=" + this.category +
+                ", name='" + this.name +
                 '}';
     }
 
-    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "books")
     private Set<Author> authors = new HashSet<Author>();
 
     @ManyToOne

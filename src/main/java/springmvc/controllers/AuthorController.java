@@ -12,17 +12,21 @@ import springmvc.services.AuthorService;
 @Controller
 @RequestMapping("/author")
 public class AuthorController {
+
     @PostMapping("/add")
-    public String addAuthor(@ModelAttribute("author") Author author){
+    public String addAuthor(@ModelAttribute("author") Author author) {
+
         this._authorService.addAuthor(author);
+
         return "redirect:/book/";
     }
 
     @GetMapping("/showAdd")
-    public String showAdd(){
+    public String showAdd() {
 
         return "form-add-author";
     }
+
     @Autowired
     private AuthorService _authorService;
 }

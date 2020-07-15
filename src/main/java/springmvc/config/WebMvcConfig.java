@@ -14,6 +14,13 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan(basePackages = {"springmvc"})
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
+        registry.addResourceHandler("/resources/**")
+                .addResourceLocations("/resources/");
+    }
+
     @Bean
     public InternalResourceViewResolver resolver() {
 
@@ -22,13 +29,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolver.setViewClass(JstlView.class);
         resolver.setPrefix("/WEB-INF/views/");
         resolver.setSuffix(".jsp");
+
         return resolver;
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-
-        registry.addResourceHandler("/resources/**")
-                .addResourceLocations("/resources/");
-    }
 }
