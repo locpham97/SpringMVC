@@ -20,11 +20,11 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
-<div align="center">
+<div class="container text-center">
     <h1>
         Add Category
     </h1>
-    <form action="/category/add" method="post">
+    <form action="/categories/add" method="post">
         <div class="form-group">
             <label for="name">Name:</label>
             <input size="50" type="text" name="name" id="name"/>

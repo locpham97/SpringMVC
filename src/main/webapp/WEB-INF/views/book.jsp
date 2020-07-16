@@ -18,19 +18,23 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
-<div align="center" class="container">
-    <h1 class="display-1">Book Management</h1>
-    <h2>
-        <a href="/book/showAdd">Add new book</a>
-    </h2>
-    <h2>
-        <a href="/category/showAdd/">Add new category</a>
-    </h2>
-    <h2>
-        <a href="/author/showAdd">Add new author</a>
-    </h2>
-    <table cellpadding="4" border="1" class="table">
-        <thead>
+<div class="container text-center">
+        <h1 class="display-1">Book Management</h1>
+        <br />
+        <h2>
+            <a href="/books/showAdd">Add new book</a>
+        </h2>
+        <br />
+        <h2>
+            <a href="/categories/showAdd/">Add new category</a>
+        </h2>
+        <br />
+        <h2 class="align-self-center">
+            <a href="/authors/showAdd">Add new author</a>
+        </h2>
+        <br />
+        <table class="table table-bordered">
+            <thead>
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Name</th>
@@ -38,8 +42,8 @@
                 <th scope="col">Category</th>
                 <th scope="col">Action</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             <c:forEach items="${listBook}" var="book">
                 <tr>
                     <td>${book.id}</td>
@@ -51,14 +55,15 @@
                     </td>
                     <td>${book.getCategory().name}</td>
                     <td>
-                        <a href="/book/showEdit/${book.id}">Edit</a>
+                        <a href="/books/showEdit/${book.id}">Edit</a>
                         &nbsp;
-                        <a href="/book/remove/${book.id}">Delete</a>
+                        <a href="/books/remove/${book.id}">Delete</a>
                     </td>
                 </tr>
             </c:forEach>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+
 </div>
 </body>
 </html>

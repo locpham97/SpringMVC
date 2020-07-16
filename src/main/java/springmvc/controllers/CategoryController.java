@@ -10,14 +10,14 @@ import springmvc.entity.Category;
 import springmvc.services.CategoryService;
 
 @Controller
-@RequestMapping("/category")
+@RequestMapping("/categories")
 public class CategoryController {
 
     @PostMapping("/add")
     public String addCategory(@ModelAttribute("category") Category category) {
 
         this._categoryService.addCategory(category);
-        return "redirect:/book/";
+        return "redirect:/books/";
     }
 
     @GetMapping("/showAdd")

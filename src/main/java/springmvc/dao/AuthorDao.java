@@ -1,6 +1,7 @@
 package springmvc.dao;
 
 import springmvc.entity.Author;
+import springmvc.entity.Book;
 
 import java.util.Set;
 
@@ -15,5 +16,7 @@ public interface AuthorDao {
     public void removeAuthor(long id);
 
     public void updateAuthor(Author author);
+
+    public void addBook(long authorId, Book book);
 
 }

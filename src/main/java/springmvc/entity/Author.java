@@ -8,27 +8,6 @@ import java.util.Set;
 @Table(name = "author")
 public class Author {
 
-    @ManyToMany(
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.DETACH,
-                    CascadeType.REFRESH,
-                    CascadeType.MERGE
-            },
-            fetch = FetchType.EAGER
-    )
-    @JoinTable(
-            name = "books_authors",
-            joinColumns = @JoinColumn(name = "author_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
-    private Set<Book> books = new HashSet<Book>();
-    private String name;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "author_id")
-    private long id;
-
     public Author() {
 
     }
@@ -57,10 +36,6 @@ public class Author {
         }
         Author author = (Author) o;
         if (id != author.id) {
-
-            return false;
-        }
-        if (books != null ? !books.equals(author.books) : author.books != null) {
 
             return false;
         }
@@ -112,4 +87,27 @@ public class Author {
                 ", name='" + this.name +
                 '}';
     }
+
+    @ManyToMany(
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.DETACH,
+                    CascadeType.REFRESH,
+                    CascadeType.MERGE
+            },
+            fetch = FetchType.EAGER
+    )
+    @JoinTable(
+            name = "books_authors",
+            joinColumns = @JoinColumn(name = "author_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
+    )
+    private Set<Book> books = new HashSet<Book>();
+
+    private String name;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "author_id")
+    private long id;
 }

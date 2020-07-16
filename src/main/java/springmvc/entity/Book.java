@@ -12,11 +12,6 @@ public class Book {
 
     }
 
-    public Set<Author> getAuthors() {
-
-        return authors;
-    }
-
     @Override
     public boolean equals(Object o) {
 
@@ -44,6 +39,11 @@ public class Book {
         }
 
         return name.equals(book.name);
+    }
+
+    public Set<Author> getAuthors() {
+
+        return authors;
     }
 
     public Category getCategory() {
@@ -90,7 +90,7 @@ public class Book {
                 '}';
     }
 
-    @ManyToMany(mappedBy = "books")
+    @ManyToMany(mappedBy = "books",fetch = FetchType.LAZY)
     private Set<Author> authors = new HashSet<Author>();
 
     @ManyToOne

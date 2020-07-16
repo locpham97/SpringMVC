@@ -10,7 +10,7 @@ import springmvc.entity.Author;
 import springmvc.services.AuthorService;
 
 @Controller
-@RequestMapping("/author")
+@RequestMapping("/authors")
 public class AuthorController {
 
     @PostMapping("/add")
@@ -18,7 +18,7 @@ public class AuthorController {
 
         this._authorService.addAuthor(author);
 
-        return "redirect:/book/";
+        return "redirect:/books/";
     }
 
     @GetMapping("/showAdd")

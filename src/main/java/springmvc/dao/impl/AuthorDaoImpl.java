@@ -1,5 +1,6 @@
 package springmvc.dao.impl;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import springmvc.dao.AuthorDao;
 import springmvc.entity.Author;
+import springmvc.entity.Book;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +25,27 @@ public class AuthorDaoImpl implements AuthorDao {
 
         Session session = this._sessionFactory.getCurrentSession();
         session.persist(author);
+    }
+
+    @Override
+    public void addBook(long authorId, Book book) {
+        try{
+
+            Session session = this._sessionFactory.getCurrentSession();
+            Author author = (Author) session.get(Author.class, authorId);
+            Book updateBook  = (Book) session.get(Book.class,book.getId());
+            Hibernate.initialize(updateBook.getAuthors());
+            if(updateBook.getAuthors().contains(author)){
+
+                return;
+            }
+            author.addBook(book);
+        }
+        catch (Exception e){
+
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -43,7 +66,7 @@ public class AuthorDaoImpl implements AuthorDao {
 
         Session session = this._sessionFactory.getCurrentSession();
         Set<Author> authorsList = new HashSet<>(
-                session.createQuery("from Author", Author.class).list()
+                session.createQuery("FROM Author", Author.class).list()
         );
 
         return authorsList;

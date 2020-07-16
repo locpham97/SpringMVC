@@ -1,5 +1,6 @@
 package springmvc.dao.impl;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +35,16 @@ public class BookDaoImpl implements BookDao {
 
             throw new Error("Not found book with " + id + " id");
         }
+        Hibernate.initialize(b.getAuthors());
 
-        return null;
+        return b;
     }
 
     public Set<Book> listBooks() {
 
         Session session = this._sessionFactory.getCurrentSession();
         Set<Book> booksList = new HashSet<>(
-            session.createQuery("from Book ", Book.class).list()
+            session.createQuery("FROM Book ", Book.class).list()
         );
 
         return booksList;

@@ -1,13 +1,8 @@
 package springmvc.controllers;
 
-import jdk.nashorn.api.scripting.JSObject;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import springmvc.entity.Author;
 import springmvc.entity.Book;
@@ -19,7 +14,7 @@ import springmvc.services.CategoryService;
 import java.util.*;
 
 @Controller
-@RequestMapping("/book")
+@RequestMapping("/books")
 @SessionAttributes
 public class BookController {
 
@@ -38,53 +33,47 @@ public class BookController {
         Category category = _categoryService.getCategoryById(idCategory);
         newBook.setCategory(category);
         newBook.setName(name);
-        Set<Author> newAuthors = new HashSet<>();
         _bookService.addBook(newBook);
         for(String strIdAuthor:authorIds){
-            Author author = _authorService.getAuthorById(Long.parseLong(strIdAuthor));
-            author.addBook(newBook);
-            newAuthors.add(author);
+
+            _authorService.addBook(Long.valueOf(strIdAuthor), newBook);
+        }
+
+        return "redirect:/books/";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editBook(@PathVariable("id") long id,@RequestParam("name") String name,@RequestParam("category") long idCategory,@RequestParam("authors") ArrayList<String> authorIds) {
+
+        Book updatedBook = _bookService.getBookById(id);
+        updatedBook.setName(name);
+        Category category = _categoryService.getCategoryById(idCategory);
+        updatedBook.setCategory(category);
+        List<Author> oldAuthors = new ArrayList<>(updatedBook.getAuthors());
+        _bookService.updateBook(updatedBook);
+        for(String strIdAuthor:authorIds){
+
+            _authorService.addBook(Long.parseLong(strIdAuthor),updatedBook);
+        }
+        for(Author author :oldAuthors){
+
+            if(authorIds.contains(String.valueOf(author.getId()))){
+
+                continue;
+            }
+            author.removeBook(updatedBook);
             _authorService.updateAuthor(author);
         }
 
-        return "redirect:/book/";
+        return "redirect:/books/";
     }
-
-//    @InitBinder
-//    protected void initBinder(WebDataBinder binder) {
-//        binder.registerCustomEditor(Set.class, "authors", new CustomCollectionEditor(Set.class)
-//        {
-//            @Override
-//            protected Object convertElement(Object element)
-//            {
-//
-//                System.out.println("ABC");
-//                Long id = null;
-//
-//                if(element instanceof String && !((String)element).equals("")){
-//                    try{
-//                        id = Long.parseLong((String) element);
-//                    }
-//                    catch (NumberFormatException e) {
-//                        System.out.println("Element was " + ((String) element));
-//                        e.printStackTrace();
-//                    }
-//                }
-//                else if(element instanceof Long) {
-//                    id = (Long) element;
-//                }
-//
-//                return id != null ? _authorService.getAuthorById(id) : null;
-//            }
-//        });
-//    }
 
     @GetMapping("/remove/{id}")
     public String removePerson(@PathVariable("id") long id) {
 
         this._bookService.removeBook(id);
 
-        return "redirect:/book/";
+        return "redirect:/books/";
     }
 
     @GetMapping("/showAdd")
@@ -98,14 +87,18 @@ public class BookController {
 
         return "form-book";
     }
+    @GetMapping("/showEdit/{id}")
+    public String showEdit(Model model,@PathVariable("id") long id) {
 
+        Book updatedBook = _bookService.getBookById(id);
+        Set<Author> listOfAuthors = this._authorService.listAuthors();
+        Set<Category> listOfCategories = this._categoryService.listCategories();
+        model.addAttribute("listOfAuthors", listOfAuthors);
+        model.addAttribute("listOfCategories", listOfCategories);
+        model.addAttribute("book",updatedBook);
+        model.addAttribute("edit",true);
 
-    @GetMapping("/update/{id}")
-    public String updateBook(@ModelAttribute("book") Book book) {
-
-        this._bookService.updateBook(book);
-
-        return "redirect:/book/";
+        return "form-book";
     }
 
     @Autowired
