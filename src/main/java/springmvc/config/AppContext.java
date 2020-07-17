@@ -69,7 +69,8 @@ public class AppContext {
         );
         properties.put(
                 "hibernate.enable_lazy_load_no_trans",
-                _environment.getRequiredProperty("hibernate.enable_lazy_load_no_trans")
+                _environment.getRequiredProperty(
+                        "hibernate.enable_lazy_load_no_trans")
         );
 
         return properties;
@@ -82,6 +83,7 @@ public class AppContext {
         sessionFactory.setDataSource(this.dataSource());
         sessionFactory.setPackagesToScan(new String[]{"springmvc.entity"});
         sessionFactory.setHibernateProperties(hibernateProperties());
+
         return sessionFactory;
     }
 

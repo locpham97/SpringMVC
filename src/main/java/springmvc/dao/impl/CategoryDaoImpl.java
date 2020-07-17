@@ -18,17 +18,34 @@ public class CategoryDaoImpl implements CategoryDao {
     @Override
     public void addCategory(Category category) {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        session.persist(category);
+        try {
+
+            Session session = this._sessionFactory.getCurrentSession();
+            session.persist(category);
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("CategoryDAO could not add category:" + category);
+        }
     }
 
     @Override
     public Category getCategoryById(long id) {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        Category category = session.load(Category.class, new Long(id));
+        Category category = null;
+        try {
+            Session session = this._sessionFactory.getCurrentSession();
+            category = session.load(Category.class, new Long(id));
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("Category could not get category" +
+                    " with id :" + id);
+        }
         if (category == null) {
-            throw new Error("Cannot find id category");
+            throw new Error("Not found category");
         }
 
         return category;
@@ -37,12 +54,21 @@ public class CategoryDaoImpl implements CategoryDao {
     @Override
     public Set<Category> listCategories() {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        Set<Category> categoriesList = new HashSet<>(
-                session.createQuery("from Category", Category.class).list()
-        );
+        Set<Category> categories = null;
+        try {
 
-        return categoriesList;
+            Session session = this._sessionFactory.getCurrentSession();
+            categories = new HashSet<>(
+                    session.createQuery("from Category", Category.class).list()
+            );
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("CategoryDAO could not list categories");
+        }
+
+        return categories;
     }
 
     @Autowired

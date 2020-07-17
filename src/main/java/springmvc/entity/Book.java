@@ -12,6 +12,12 @@ public class Book {
 
     }
 
+    public Book(Category category, String name) {
+
+        this.category = category;
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
 
@@ -25,20 +31,12 @@ public class Book {
         }
         Book book = (Book) o;
 
-        if (id != book.id) {
-
-            return false;
-        }
-        if (authors != null ? !authors.equals(book.authors) : book.authors != null) {
-
-            return false;
-        }
-        if (category != null ? !category.equals(book.category) : book.category != null) {
+        if (id != book.getId()) {
 
             return false;
         }
 
-        return name.equals(book.name);
+        return id == book.getId();
     }
 
     public Set<Author> getAuthors() {
@@ -90,7 +88,7 @@ public class Book {
                 '}';
     }
 
-    @ManyToMany(mappedBy = "books",fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "books", fetch = FetchType.LAZY)
     private Set<Author> authors = new HashSet<Author>();
 
     @ManyToOne

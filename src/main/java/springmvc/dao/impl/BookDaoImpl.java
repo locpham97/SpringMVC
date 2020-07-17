@@ -16,53 +16,86 @@ import java.util.Set;
 @Transactional
 public class BookDaoImpl implements BookDao {
 
-    public void setSessionFactory(SessionFactory sf) {
-
-        this._sessionFactory = sf;
-    }
-
     public void addBook(Book book) {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        session.persist(book);
+        try {
+
+            Session session = this._sessionFactory.getCurrentSession();
+            session.persist(book);
+            session.flush();
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("BookDAO could not add new book:" + book);
+        }
     }
 
     public Book getBookById(long id) {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        Book b = session.load(Book.class, new Long(id));
-        if (b == null) {
+        Book book = null;
+        try {
+
+            Session session = this._sessionFactory.getCurrentSession();
+            book = session.load(Book.class, new Long(id));
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("BookDAO could not get book by id:" + id);
+        }
+        if (book == null) {
 
             throw new Error("Not found book with " + id + " id");
         }
-        Hibernate.initialize(b.getAuthors());
+        Hibernate.initialize(book.getAuthors());
 
-        return b;
+        return book;
     }
 
     public Set<Book> listBooks() {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        Set<Book> booksList = new HashSet<>(
-            session.createQuery("FROM Book ", Book.class).list()
-        );
+        Set<Book> books = null;
+        try {
+            Session session = this._sessionFactory.getCurrentSession();
+            books = new HashSet<>(
+                    session.createQuery("FROM Book ", Book.class).list()
+            );
+        }
+        catch (Exception e) {
 
-        return booksList;
+            e.printStackTrace();
+            throw new Error("BookDAO could not list books");
+        }
+
+        return books;
     }
 
     public void updateBook(Book book) {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        session.update(book);
+        try {
+            Session session = this._sessionFactory.getCurrentSession();
+            session.update(book);
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("BookDAO could not update book:" + book);
+        }
     }
 
     public void removeBook(long id) {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        Book b = session.load(Book.class, new Long(id));
-        if(b != null){
+        try {
 
-            session.delete(b);
+            Session session = this._sessionFactory.getCurrentSession();
+            Book book = session.load(Book.class, new Long(id));
+            session.delete(book);
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("BookDAO could not delete book with id:" + id);
         }
     }
 

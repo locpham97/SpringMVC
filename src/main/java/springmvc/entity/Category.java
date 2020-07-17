@@ -9,6 +9,7 @@ import java.util.Set;
 public class Category {
 
     public Category() {
+
     }
 
     public Category(String name) {

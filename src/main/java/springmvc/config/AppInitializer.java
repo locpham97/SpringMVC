@@ -9,14 +9,15 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
         return new Class[]{
 
-            AppContext.class
-        } ;
+                AppContext.class
+        };
     }
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
 
         return new Class[]{
+
                 WebMvcConfig.class
         };
     }
@@ -25,6 +26,7 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
     protected String[] getServletMappings() {
 
         return new String[]{
+
                 "/"
         };
     }

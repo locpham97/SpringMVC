@@ -3,10 +3,12 @@ package springmvc.services.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import springmvc.dao.AuthorDao;
+import springmvc.dao.BookDao;
 import springmvc.entity.Author;
 import springmvc.entity.Book;
 import springmvc.services.AuthorService;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -42,9 +44,9 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public void addBook(long authorId, Book book) {
+    public void addBook(List<Long> authorIds, Book book) {
 
-        this.authorDao.addBook(authorId, book);
+        this.authorDao.addBook(authorIds, book);
     }
 
     @Autowired

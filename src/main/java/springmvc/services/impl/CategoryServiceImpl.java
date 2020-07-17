@@ -15,11 +15,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void addCategory(Category category) {
+
         this.categoryDao.addCategory(category);
     }
 
     @Override
     public Category getCategoryById(long id) {
+
         return this.categoryDao.getCategoryById(id);
     }
 

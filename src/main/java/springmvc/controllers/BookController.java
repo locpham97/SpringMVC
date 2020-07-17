@@ -10,8 +10,10 @@ import springmvc.entity.Category;
 import springmvc.services.AuthorService;
 import springmvc.services.BookService;
 import springmvc.services.CategoryService;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/books")
@@ -27,41 +29,46 @@ public class BookController {
     }
 
     @PostMapping("/add")
-    public String addBook(@RequestParam("name") String name,@RequestParam("category") long idCategory,@RequestParam("authors") String[] authorIds) {
+    public String addBook(@RequestParam("name") String name,
+                          @RequestParam("category") long idCategory,
+                          @RequestParam("authors") List<String> strAuthorIds) {
 
-        Book newBook = new Book();
         Category category = _categoryService.getCategoryById(idCategory);
-        newBook.setCategory(category);
-        newBook.setName(name);
-        _bookService.addBook(newBook);
-        for(String strIdAuthor:authorIds){
-
-            _authorService.addBook(Long.valueOf(strIdAuthor), newBook);
-        }
+        Book book = new Book(category,name);
+        _bookService.addBook(book);
+        List<Long> authorIds = strAuthorIds
+                                        .stream()
+                                        .map(Long::valueOf)
+                                        .collect(Collectors.toList());
+        _authorService.addBook(authorIds, book);
 
         return "redirect:/books/";
     }
 
     @PostMapping("/edit/{id}")
-    public String editBook(@PathVariable("id") long id,@RequestParam("name") String name,@RequestParam("category") long idCategory,@RequestParam("authors") ArrayList<String> authorIds) {
+    public String editBook(@PathVariable("id") long id,
+                           @RequestParam("name") String name,
+                           @RequestParam("category") long idCategory,
+                           @RequestParam("authors") ArrayList<String> strAuthorIds) {
 
-        Book updatedBook = _bookService.getBookById(id);
-        updatedBook.setName(name);
+        Book book = _bookService.getBookById(id);
+        book.setName(name);
         Category category = _categoryService.getCategoryById(idCategory);
-        updatedBook.setCategory(category);
-        List<Author> oldAuthors = new ArrayList<>(updatedBook.getAuthors());
-        _bookService.updateBook(updatedBook);
-        for(String strIdAuthor:authorIds){
+        book.setCategory(category);
+        _bookService.updateBook(book);
+        List<Author> oldAuthors = new ArrayList<>(book.getAuthors());
+        List<Long> authorIds = strAuthorIds
+                                    .stream()
+                                    .map(Long::valueOf)
+                                    .collect(Collectors.toList());
+        _authorService.addBook(authorIds, book);
+        for (Author author : oldAuthors) {
 
-            _authorService.addBook(Long.parseLong(strIdAuthor),updatedBook);
-        }
-        for(Author author :oldAuthors){
-
-            if(authorIds.contains(String.valueOf(author.getId()))){
+            if (authorIds.contains(author.getId())) {
 
                 continue;
             }
-            author.removeBook(updatedBook);
+            author.removeBook(book);
             _authorService.updateAuthor(author);
         }
 
@@ -83,20 +90,21 @@ public class BookController {
         Set<Category> listOfCategories = this._categoryService.listCategories();
         model.addAttribute("listOfAuthors", listOfAuthors);
         model.addAttribute("listOfCategories", listOfCategories);
-        model.addAttribute("edit",false);
+        model.addAttribute("edit", false);
 
         return "form-book";
     }
+
     @GetMapping("/showEdit/{id}")
-    public String showEdit(Model model,@PathVariable("id") long id) {
+    public String showEdit(Model model, @PathVariable("id") long id) {
 
         Book updatedBook = _bookService.getBookById(id);
         Set<Author> listOfAuthors = this._authorService.listAuthors();
         Set<Category> listOfCategories = this._categoryService.listCategories();
         model.addAttribute("listOfAuthors", listOfAuthors);
         model.addAttribute("listOfCategories", listOfCategories);
-        model.addAttribute("book",updatedBook);
-        model.addAttribute("edit",true);
+        model.addAttribute("book", updatedBook);
+        model.addAttribute("edit", true);
 
         return "form-book";
     }

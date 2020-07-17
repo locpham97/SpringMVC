@@ -10,7 +10,9 @@ import springmvc.dao.AuthorDao;
 import springmvc.entity.Author;
 import springmvc.entity.Book;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -23,36 +25,65 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public void addAuthor(Author author) {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        session.persist(author);
+        try {
+            Session session = this._sessionFactory.getCurrentSession();
+            session.persist(author);
+            session.flush();
+        }
+        catch (Exception e) {
+            throw new Error("AuthorDAO could not add author:" + author);
+        }
+
     }
 
     @Override
-    public void addBook(long authorId, Book book) {
-        try{
+    public void addBook(List<Long> authorIds, Book book) {
+
+        try {
 
             Session session = this._sessionFactory.getCurrentSession();
-            Author author = (Author) session.get(Author.class, authorId);
-            Book updateBook  = (Book) session.get(Book.class,book.getId());
-            Hibernate.initialize(updateBook.getAuthors());
-            if(updateBook.getAuthors().contains(author)){
+            String query = "FROM Author author WHERE author.id IN :ids";
+            ArrayList<Author> authors = new ArrayList<>(session
+                                    .createQuery(query)
+                                    .setParameterList("ids",authorIds)
+                                    .list());
 
-                return;
+            for(Author author: authors){
+                boolean isBelongAuthor = author.getBooks()
+                                        .stream()
+                                        .anyMatch(b-> b.getId() == book.getId());
+                if(isBelongAuthor){
+
+                    continue;
+                }
+                author.addBook(book);
             }
-            author.addBook(book);
+            session.flush();
         }
-        catch (Exception e){
+        catch (Exception e) {
 
             e.printStackTrace();
+            throw new Error("AuthorDAO could not added book with " + book
+                    + " authors with " + authorIds);
         }
-
     }
 
     @Override
     public Author getAuthorById(long id) {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        Author a = session.load(Author.class, new Long(id));
+        Author a = null;
+        try {
+
+            Session session = this._sessionFactory.getCurrentSession();
+            a = session.load(Author.class, new Long(id));
+            session.flush();
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("AuthorDAO could not get author with:" + id);
+        }
+
         if (a == null) {
 
             throw new Error("Not found author with " + id + " id");
@@ -64,28 +95,53 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public Set<Author> listAuthors() {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        Set<Author> authorsList = new HashSet<>(
-                session.createQuery("FROM Author", Author.class).list()
-        );
+        Set<Author> authors = null;
+        try {
 
-        return authorsList;
+            Session session = this._sessionFactory.getCurrentSession();
+            authors = new HashSet<>(
+                    session.createQuery("FROM Author", Author.class).list()
+            );
+            session.flush();
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("AuthorDAO could not list authors");
+        }
+
+        return authors;
     }
 
     @Override
     public void removeAuthor(long id) {
 
-        Session session = this._sessionFactory.getCurrentSession();
-        Author a = session.load(Author.class, new Long(id));
-        if (a != null) {
+        Author a = null;
+        try {
 
-            session.delete(a);
+            Session session = this._sessionFactory.getCurrentSession();
+            a = session.load(Author.class, new Long(id));
+            session.remove(a);
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("AuthorDAO could not delete author with:" + id);
         }
     }
 
     @Override
     public void updateAuthor(Author author) {
-        Session session = this._sessionFactory.getCurrentSession();
-        session.update(author);
+
+        try {
+
+            Session session = this._sessionFactory.getCurrentSession();
+            session.update(author);
+        }
+        catch (Exception e) {
+
+            e.printStackTrace();
+            throw new Error("AuthorDAO could not update author:" + author);
+        }
     }
 }
